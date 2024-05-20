@@ -19,12 +19,10 @@ const getAll = async (req) => {
     return await formulaRepository.getAll(req);
 }
 const execute = async (req) => {
-    //findRules
     const findRulesResult = await findRules(req.body.metaData, req.body.clientName, req.body.ruleIds);
     const evaluateResult = evaluate(findRulesResult, req.body.input);
 
     return evaluateResult;
-    //evaluateRules
 }
 
 const findRules = async (metaData, clientName, ruleIds) => {
@@ -39,9 +37,6 @@ const findRules = async (metaData, clientName, ruleIds) => {
 
 
 const evaluate = (rule, input) => {
-    // const expression = 'Hi there ##IF(AND ($DURATION_IN_DAYS > 3, $TRIP_TYPE=="Single Trip"), 200, 100)//';
-    console.log("rule here ", rule[0].dataValues)
-
     const expression = rule[0].dataValues.expression;
 
     let formula = extractFormula(expression);
