@@ -24,27 +24,27 @@ const getAll = async (req) => {
 }
 const execute = async (req) => {
     console.log("Execute formula service called\n");
-    const findRulesResult = await findRules(req.body.metaData, req.body.clientName, req.body.ruleIds);
-    const evaluateResult = evaluate(findRulesResult, req.body.input);
+    const findRuleResult = await findRule(req.body.metaData, req.body.clientName, req.body.ruleId);
+    const evaluateResult = evaluate(findRuleResult, req.body.input);
 
     return evaluateResult;
 }
 
-const findRules = async (metaData, clientName, ruleIds) => {
-    console.log("Find rules service called\n");
-    if (ruleIds == undefined || ruleIds.length == 0) {
-        const findRules = await formulaRepository.findRules(metaData, clientName);
-        return findRules;
+const findRule = async (metaData, clientName, ruleId) => {
+    console.log("Find rule service called\n");
+    if (ruleId == undefined || ruleId.length == 0) {
+        const findRule = await formulaRepository.findRule(metaData, clientName);
+        return findRule;
     }else{
-        const findRules = await formulaRepository.findRulesFromIds(ruleIds);
-        return findRules;
+        const findRule = await formulaRepository.getRuleFromId(ruleId); 
+        return findRule;
     }
 }
 
 
 const evaluate = (rule, input) => {
     console.log("Evaluate formula service called\n");
-    const expression = rule[0].dataValues.expression;
+    const expression = rule.dataValues.expression;
 
     let formula = extractFormula(expression);
     let replacedFormula = replaceVariables(formula, input);
@@ -82,4 +82,9 @@ function replaceVariables(formula, variables) {
       }
     });
 }
-module.exports = {create, update, getOne, getAll, execute};
+
+const deleteFormula = async (id) => {
+    console.log("Delete formula service called\n");
+    return await formulaRepository.deleteFormula(id);
+}
+module.exports = {create, update, getOne, getAll, execute, deleteFormula};

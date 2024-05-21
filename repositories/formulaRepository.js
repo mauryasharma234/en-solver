@@ -13,7 +13,6 @@ const create = async (data) => {
     return result;
 }
 
-
 const update = async (data) => {
     console.log("Update formula repository called\n")
     const result = await formula.update({
@@ -34,15 +33,16 @@ const update = async (data) => {
 }
 
 const getOne = async (id) => {
-    console.log("Get one formula repository called\n")
+    console.log("Get one formula repository called\n");
     const result = await formula.findOne({
         where: {
-            id: id
+            id: id,
+            deletedAt: null
         }
     });
-    console.log("Response returned from db for get one formula\n", result)
+    console.log("Response returned from db for get one formula\n", result);
     return result;
-}
+};
 
 const getAll = async (req) => {
     console.log("Get all formula repository called\n")
@@ -58,6 +58,9 @@ const getAll = async (req) => {
         const data = await formula.findAll({
             limit: parsedLimit,
             offset: actualOffset,
+            where: {
+                deletedAt: null
+            }
         });
 
         const totalCount = await formula.count();
@@ -68,20 +71,20 @@ const getAll = async (req) => {
     }
 }
 
-
-const findRulesFromIds = async (ruleIds) => {
-    console.log("Find rules from ids repository called\n")
-    const result = await formula.findAll({
+const getRuleFromId = async (ruleId) => {
+    console.log("Find rule from id repository called\n")
+    const result = await formula.findOne({
         where: {
-            id: ruleIds
+            id: ruleId,
+            deletedAt: null
         }
     });
-    console.log("Response returned from db for find rules from ids\n", result)
+    console.log("Response returned from db for find rule from id\n", result)
     return result;
 }
 
-const findRules = async (metaData, clientName) => {
-    console.log("Find rules repository called\n")
+const findRule = async (metaData, clientName) => {
+    console.log("Find rules repository called\n");
     const metadataConditions = Object.keys(metaData).map((key) => {
       return Sequelize.literal(`metadata->>'${key}' = '${metaData[key]}'`);
     });
@@ -89,13 +92,29 @@ const findRules = async (metaData, clientName) => {
     const whereClause = {
       clientName: clientName,
       [Op.and]: metadataConditions,
+      deletedAt: null,
     };
   
-    const result = await formula.findAll({
+    const result = await formula.findOne({
       where: whereClause,
+      order: [['updatedAt', 'DESC']],
     });
-    console.log("Response returned from db for find rules\n", result)
+    console.log("Response returned from db for find rule\n", result);
     return result;
 };
 
-module.exports = {create, update, getOne, getAll, findRulesFromIds, findRules}
+const deleteFormula = async (id) => {
+    console.log("Delete formula repository called\n");
+    
+    const result = await formula.update(
+        { deletedAt: Sequelize.literal('CURRENT_TIMESTAMP') },
+        { where: { id: id } }
+    );
+    
+    console.log("Response returned from db for delete formula\n", result);
+    return {
+        rowsAffected: result,
+        id: id
+    };
+};
+module.exports = {create, update, getOne, getAll, getRuleFromId, findRule, deleteFormula}
