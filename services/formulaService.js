@@ -20,7 +20,8 @@ const getOne = async (id) => {
 }
 const getAll = async (req) => {
     console.log("Get all formula service called\n");
-    return await formulaRepository.getAll(req);
+    const result = await formulaRepository.getAll(req);
+    return result;
 }
 const execute = async (req) => {
     console.log("Execute formula service called\n");
