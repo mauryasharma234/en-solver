@@ -46,29 +46,29 @@ const getOne = async (id) => {
 
 const getAll = async (req) => {
     console.log("Get all formula repository called\n")
-    const { limit = 10, offset = 0, pageNumber = 1 } = req.query;
+    const { limit = 10, offset = 0, pageNumber = 1, search = "" } = req.query;
 
     const parsedLimit = parseInt(limit, 10);
     const parsedOffset = parseInt(offset, 10);
     const parsedPageNumber = parseInt(pageNumber, 10);
 
     const actualOffset = parsedOffset + (parsedPageNumber - 1) * parsedLimit;
+    const whereClause = {
+        [Op.or]: [
+          Sequelize.literal(`metadata::text ILIKE '%${search}%'`)
+        ],
+        deletedAt: null,
+      };
 
-    try {
-        const data = await formula.findAll({
+    const data = await formula.findAll({
             limit: parsedLimit,
             offset: actualOffset,
-            where: {
-                deletedAt: null
-            }
-        });
+            where: whereClause
+    });
 
-        const totalCount = await formula.count();
-        console.log("Response returned from db for get all formula\n", data)
-        return {data, totalCount};
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    const totalCount = await formula.count();
+    console.log("Response returned from db for get all formula\n", data)
+    return {data, totalCount};
 }
 
 const getRuleFromId = async (ruleId) => {
