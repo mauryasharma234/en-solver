@@ -80,5 +80,12 @@ const deleteFormula = async (req, res) => {
     }
 }
 
+const getClientNames = async (req, res) => {
+   
+        console.log("Request received for getting client names\n")
+        const result = await formulaSerice.getClientNames();
+        return res.status(200).json(result);
 
-module.exports = {create, update, getOne, getAll, getFromMetadata, execute, deleteFormula}
+}
+
+module.exports = {create, update, getOne, getAll, getFromMetadata, execute, deleteFormula, getClientNames}

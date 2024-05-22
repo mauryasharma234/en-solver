@@ -144,4 +144,9 @@ const getFromMetadata = async (req) => {
     console.log("Get from metadata service called\n");
     return await formulaRepository.getFromMetadata(req);
 }
-module.exports = {create, update, getOne, getAll, execute, deleteFormula, getFromMetadata};
+
+const getClientNames = async () => {
+    console.log("Get client names service called\n");
+    return await formulaRepository.getClientNames();
+}
+module.exports = {create, update, getOne, getAll, execute, deleteFormula, getFromMetadata, getClientNames};

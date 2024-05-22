@@ -132,4 +132,15 @@ const getFromMetadata = async (req) => {
     
       return result;
 }
-module.exports = {create, update, getOne, getAll, getRuleFromId, findRule, deleteFormula, getFromMetadata}
+const getClientNames = async () => {
+    const clientNames = await formula.findAll({
+        attributes: [
+            [Sequelize.fn('DISTINCT', Sequelize.col('clientName')), 'clientName']
+        ],
+        raw: true,
+    });
+    const names = clientNames.map(client => client.clientName);
+
+    return names;
+}
+module.exports = {create, update, getOne, getAll, getRuleFromId, findRule, deleteFormula, getFromMetadata, getClientNames}
