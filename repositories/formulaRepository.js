@@ -117,4 +117,19 @@ const deleteFormula = async (id) => {
         id: id
     };
 };
-module.exports = {create, update, getOne, getAll, getRuleFromId, findRule, deleteFormula}
+const getFromMetadata = async (req) => {
+    console.log("Get formula from metadata repository called\n")
+    const { query } = req.query;  // Assuming the query parameter is passed like ?query=something
+    const whereClause = {
+        [Op.or]: [
+          Sequelize.literal(`metadata::text ILIKE '%${query}%'`)
+        ],
+      };
+
+      const result = await formula.findAll({
+        where: whereClause,
+      });
+    
+      return result;
+}
+module.exports = {create, update, getOne, getAll, getRuleFromId, findRule, deleteFormula, getFromMetadata}

@@ -139,4 +139,8 @@ const deleteFormula = async (id) => {
     console.log("Delete formula service called\n");
     return await formulaRepository.deleteFormula(id);
 }
-module.exports = {create, update, getOne, getAll, execute, deleteFormula};
+const getFromMetadata = async (req) => {
+    console.log("Get from metadata service called\n");
+    return await formulaRepository.getFromMetadata(req);
+}
+module.exports = {create, update, getOne, getAll, execute, deleteFormula, getFromMetadata};
