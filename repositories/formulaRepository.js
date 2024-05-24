@@ -46,13 +46,13 @@ const getOne = async (id) => {
 
 const getAll = async (req) => {
     console.log("Get all formula repository called\n")
-    const { limit = 10, offset = 0, pageNumber = 1, search = "" } = req.query;
+    const { limit = 10, pageNumber = 1, search = "" } = req.query;
 
     const parsedLimit = parseInt(limit, 10);
-    const parsedOffset = parseInt(offset, 10);
-    const parsedPageNumber = parseInt(pageNumber, 10);
+    const offSet = parsedLimit * (parseInt(pageNumber, 10) - 1)
+    // const parsedPageNumber = parseInt(pageNumber, 10);
 
-    const actualOffset = parsedOffset + (parsedPageNumber - 1) * parsedLimit;
+    // const actualOffset = parsedOffset + (parsedPageNumber - 1) * parsedLimit;
     const whereClause = {
         [Op.or]: [
           Sequelize.literal(`metadata::text ILIKE '%${search}%'`)
@@ -62,13 +62,16 @@ const getAll = async (req) => {
 
     const data = await formula.findAll({
             limit: parsedLimit,
-            offset: actualOffset,
-            where: whereClause
+            offset: offSet,
+            where: whereClause,
+            order: [['updatedAt', 'DESC']]
     });
-
+    const searchCount = await formula.count({
+        where: whereClause
+    });
     const totalCount = await formula.count();
     console.log("Response returned from db for get all formula\n", data)
-    return {data, totalCount};
+    return {data, totalCount, searchCount};
 }
 
 const getRuleFromId = async (ruleId) => {
